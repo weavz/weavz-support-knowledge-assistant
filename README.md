@@ -1,4 +1,23 @@
-# Support Knowledge Assistant
+# Gmail and Notion MCP agent with PydanticAI: Support Knowledge Assistant
+
+<!-- weavz:discovery:start -->
+
+Use Gmail and Notion with PydanticAI through Weavz MCP. This support knowledge assistant example returns a report from bounded app reads with source references.
+
+**Framework:** PydanticAI · **Language:** Python · **MCP modes:** Tool Mode and Code Mode
+
+Use another framework:
+
+- [Gmail MCP with OpenAI Agents SDK Python](https://github.com/weavz/weavz-openai-agents-python/blob/main/docs/app-recipes.md#gmail-mcp-with-openai-agents-sdk-python)
+- [Gmail MCP with PydanticAI Python](https://github.com/weavz/weavz-pydantic-ai/blob/main/docs/app-recipes.md#gmail-mcp-with-pydanticai-python)
+- [Gmail MCP with Google ADK Python](https://github.com/weavz/weavz-google-adk-python/blob/main/docs/app-recipes.md#gmail-mcp-with-google-adk-python)
+- [Notion MCP with OpenAI Agents SDK Python](https://github.com/weavz/weavz-openai-agents-python/blob/main/docs/app-recipes.md#notion-mcp-with-openai-agents-sdk-python)
+- [Notion MCP with PydanticAI Python](https://github.com/weavz/weavz-pydantic-ai/blob/main/docs/app-recipes.md#notion-mcp-with-pydanticai-python)
+- [Notion MCP with LangChain Python](https://github.com/weavz/weavz-langchain-python/blob/main/docs/app-recipes.md#notion-mcp-with-langchain-python)
+
+[MCP app and framework directory](https://github.com/weavz/mcp-examples/blob/main/docs/integrations.md) · [All examples](https://github.com/weavz/mcp-examples) · [Weavz MCP guide](https://weavz.io/docs/guides/agent-framework-examples)
+
+<!-- weavz:discovery:end -->
 
 Answer the synthetic customer’s policy question using the full Gmail message and the actual Notion policy page content. Quote the applicable rule and state any missing information needed to decide the case.
 
