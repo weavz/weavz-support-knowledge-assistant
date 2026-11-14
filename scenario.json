@@ -1,0 +1,138 @@
+{
+  "id": "support-knowledge-assistant",
+  "title": "Support Knowledge Assistant",
+  "prompt": "Answer the synthetic customer’s policy question using the full Gmail message and the actual Notion policy page content. Quote the applicable rule and state any missing information needed to decide the case.",
+  "instructions": "Search Gmail for the sample question, then get_message for every returned message before interpreting it. Search Notion by policy-page title and call getPageOrBlockChildren with the returned parentId, markdown true, and dynamic {} to read actual content. Do not reply to email or modify either app. If the policy page does not resolve an edge case, state that and do not invent a decision.",
+  "fixture_summary": "Synthetic Gmail search returns one customer question about a damaged item. Notion title search finds a refund policy page; full block content specifies a 30-day reporting window and required order details.",
+  "inputs": {
+    "gmail_query": "subject:\"damaged item\" newer_than:30d",
+    "notion_title": "Refund and return policy"
+  },
+  "steps": [
+    {
+      "id": "search_support_mail",
+      "alias": "support_inbox",
+      "integration": "gmail",
+      "action": "list_messages",
+      "tool": "support_inbox__list_messages",
+      "arguments": {
+        "query": "subject:\"damaged item\" newer_than:30d",
+        "maxResults": 1
+      },
+      "records": [
+        {
+          "id": "gmail-support-901",
+          "app": "Gmail",
+          "title": "Question about damaged item",
+          "detail": "Synthetic message summary: customer asks whether a damaged item can be returned.",
+          "url": "https://example.com/records/gmail-support-901",
+          "message_id": "gmail-support-901",
+          "source_kind": "customer_question",
+          "action_required": true
+        }
+      ]
+    },
+    {
+      "id": "read_support_question",
+      "alias": "support_inbox",
+      "integration": "gmail",
+      "action": "get_message",
+      "tool": "support_inbox__get_message",
+      "arguments": {
+        "messageId": "gmail-support-901",
+        "format": "full"
+      },
+      "records": [
+        {
+          "id": "gmail-support-901",
+          "app": "Gmail",
+          "title": "Question about damaged item",
+          "detail": "Full synthetic body: The item arrived with a cracked casing. Customer asks whether return shipping is covered; order number and delivery date are not provided.",
+          "url": "https://example.com/records/gmail-support-901",
+          "message_id": "gmail-support-901",
+          "source_kind": "customer_question",
+          "action_required": true,
+          "missing_order_number": true,
+          "missing_delivery_date": true
+        }
+      ]
+    },
+    {
+      "id": "find_refund_policy",
+      "alias": "support_knowledge",
+      "integration": "notion",
+      "action": "find_page",
+      "tool": "support_knowledge__find_page",
+      "arguments": {
+        "title": "Refund and return policy",
+        "exact_match": false,
+        "limit": 5
+      },
+      "records": [
+        {
+          "id": "notion-policy-42",
+          "app": "Notion",
+          "title": "Refund and return policy",
+          "detail": "Synthetic title-search result; read page blocks for the policy text.",
+          "url": "https://example.com/records/notion-policy-42",
+          "parent_id": "notion-policy-42",
+          "source_kind": "policy"
+        }
+      ]
+    },
+    {
+      "id": "read_refund_policy",
+      "alias": "support_knowledge",
+      "integration": "notion",
+      "action": "getPageOrBlockChildren",
+      "tool": "support_knowledge__getPageOrBlockChildren",
+      "arguments": {
+        "parentId": "notion-policy-42",
+        "markdown": true,
+        "dynamic": {}
+      },
+      "records": [
+        {
+          "id": "notion-policy-42",
+          "app": "Notion",
+          "title": "Refund and return policy",
+          "detail": "Synthetic page content: report damage within 30 days of delivery and provide the order number plus a photo. The policy text does not say whether return shipping is covered for damaged items.",
+          "url": "https://example.com/records/notion-policy-42",
+          "parent_id": "notion-policy-42",
+          "source_kind": "policy",
+          "content_read": true,
+          "reporting_window_days": 30,
+          "shipping_coverage_specified": false
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "source_records_read",
+      "op": "count",
+      "where": {
+        "content_read": true
+      }
+    },
+    {
+      "name": "customer_details_missing",
+      "op": "count",
+      "where": {
+        "missing_order_number": true
+      }
+    },
+    {
+      "name": "policy_sources_specifying_shipping_coverage",
+      "op": "count",
+      "where": {
+        "shipping_coverage_specified": true
+      }
+    }
+  ],
+  "expected_metrics": {
+    "source_records_read": 1,
+    "customer_details_missing": 1,
+    "policy_sources_specifying_shipping_coverage": 0
+  }
+}
